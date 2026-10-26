@@ -1,0 +1,12 @@
+# Copied here for reference. NeoForge creates config/bluemap_skinrestorer_bridge-common.toml.
+enabled = true
+changeDetectionSeconds = 10
+connectTimeoutSeconds = 5
+readTimeoutSeconds = 10
+maxImageBytes = 2097152
+maxCacheEntries = 256
+cacheExpireMinutes = 60
+retryCount = 2
+retryBackoffMillis = 250
+fallbackPolicy = "ORIGINAL_PROVIDER"
+debugLogging = false

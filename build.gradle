@@ -1,0 +1,98 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = 'bluemap-skinrestorer-bridge'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = neo_version
+
+    runs {
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    compileOnly files('bluemap-5.7-neoforge.jar')
+    compileOnly files('skinrestorer-2.11.0+1.21-neoforge.jar')
+    localRuntime files('bluemap-5.7-neoforge.jar')
+    localRuntime files('skinrestorer-2.11.0+1.21-neoforge.jar')
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.assertj:assertj-core:3.27.3'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'org.slf4j:slf4j-api:2.0.16'
+    testRuntimeOnly 'org.slf4j:slf4j-simple:2.0.16'
+    testImplementation files('bluemap-5.7-neoforge.jar')
+}
+
+def targetJarHashes = [
+        'bluemap-5.7-neoforge.jar': '827ac3921986d0d5e9c24ef2280f47c110d22dc14d284efb65330010d2e9517d',
+        'skinrestorer-2.11.0+1.21-neoforge.jar': 'a56b18a7f51f66cdb0010c2a1d4d3b056bb65573351f90eb406974bfacfc4bc8'
+]
+
+tasks.register('verifyTargetJars') {
+    inputs.files(targetJarHashes.keySet())
+    inputs.property('expectedHashes', targetJarHashes)
+    doLast {
+        def expectedHashes = inputs.properties.expectedHashes
+        inputs.files.files.each { targetFile ->
+            def expected = expectedHashes[targetFile.name]
+            def digest = java.security.MessageDigest.getInstance('SHA-256')
+            targetFile.withInputStream { stream ->
+                byte[] buffer = new byte[8192]
+                for (int count = stream.read(buffer); count >= 0; count = stream.read(buffer)) {
+                    digest.update(buffer, 0, count)
+                }
+            }
+            def actual = digest.digest().encodeHex().toString()
+            if (actual != expected) throw new GradleException("Unexpected SHA-256 for ${targetFile.name}: ${actual}")
+        }
+    }
+}
+
+tasks.named('compileJava') { dependsOn 'verifyTargetJars' }
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+}
+
+tasks.named('jar', Jar) {
+    archiveFileName = "bluemap-skinrestorer-bridge-${mod_version}+${minecraft_version}-neoforge.jar"
+    manifest {
+        attributes('Automatic-Module-Name': 'io.github.bluemapskinrestorerbridge')
+    }
+}
+
+tasks.named('wrapper', Wrapper) {
+    distributionType = Wrapper.DistributionType.BIN
+    gradleVersion = '9.2.1'
+}

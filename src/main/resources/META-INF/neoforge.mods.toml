@@ -1,0 +1,39 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+modId="bluemap_skinrestorer_bridge"
+version="0.1.0"
+displayName="BlueMap SkinRestorer Bridge"
+authors="BlueMap SkinRestorer Bridge contributors"
+description='''Uses Lionarius SkinRestorer selections as BlueMap player skins.'''
+displayTest="IGNORE_ALL_VERSION"
+
+[[dependencies.bluemap_skinrestorer_bridge]]
+modId="neoforge"
+type="required"
+versionRange="[21.1,21.2)"
+ordering="NONE"
+side="SERVER"
+
+[[dependencies.bluemap_skinrestorer_bridge]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="SERVER"
+
+[[dependencies.bluemap_skinrestorer_bridge]]
+modId="bluemap"
+type="required"
+versionRange="[5.7,5.8)"
+ordering="AFTER"
+side="SERVER"
+
+[[dependencies.bluemap_skinrestorer_bridge]]
+modId="skinrestorer"
+type="required"
+versionRange="[2.11.0,2.12.0)"
+ordering="AFTER"
+side="SERVER"

@@ -1,0 +1,1 @@
+0c186336144c34d988179d66950f6e34ff9a99e78d5273c6c81cc69377206977  bluemap-skinrestorer-bridge-0.1.0+1.21.1-neoforge.jar
